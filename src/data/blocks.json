@@ -1,0 +1,310 @@
+{
+  "blocks": [
+    {
+      "id": 1,
+      "name": "Square Block",
+      "entities": [
+        {
+          "id": 1,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 100, "y": 80 },
+            { "x": 280, "y": 80 }
+          ]
+        },
+        {
+          "id": 2,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 280, "y": 80 },
+            { "x": 280, "y": 260 }
+          ]
+        },
+        {
+          "id": 3,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 280, "y": 260 },
+            { "x": 100, "y": 260 }
+          ]
+        },
+        {
+          "id": 4,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 100, "y": 260 },
+            { "x": 100, "y": 80 }
+          ]
+        },
+        {
+          "id": 5,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 1,
+          "startOffset": 30,
+          "endOffset": 90,
+          "vertexes": [
+            { "x": 130, "y": 80 },
+            { "x": 190, "y": 80 }
+          ]
+        },
+        {
+          "id": 6,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 2,
+          "startOffset": 30,
+          "endOffset": 90,
+          "vertexes": [
+            { "x": 280, "y": 110 },
+            { "x": 280, "y": 170 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Rectangle Block",
+      "entities": [
+        {
+          "id": 7,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 330, "y": 80 },
+            { "x": 530, "y": 80 }
+          ]
+        },
+        {
+          "id": 8,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 530, "y": 80 },
+            { "x": 530, "y": 260 }
+          ]
+        },
+        {
+          "id": 9,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 530, "y": 260 },
+            { "x": 330, "y": 260 }
+          ]
+        },
+        {
+          "id": 10,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 330, "y": 260 },
+            { "x": 330, "y": 80 }
+          ]
+        },
+        {
+          "id": 11,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 7,
+          "startOffset": 50,
+          "endOffset": 110,
+          "vertexes": [
+            { "x": 380, "y": 80 },
+            { "x": 440, "y": 80 }
+          ]
+        },
+        {
+          "id": 12,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 8,
+          "startOffset": 30,
+          "endOffset": 90,
+          "vertexes": [
+            { "x": 530, "y": 110 },
+            { "x": 530, "y": 170 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Rounded Block",
+      "entities": [
+        {
+          "id": 13,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 80, "y": 310 },
+            { "x": 330, "y": 310 }
+          ]
+        },
+        {
+          "id": 14,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 330, "y": 310 },
+            { "x": 330, "y": 410 }
+          ]
+        },
+        {
+          "id": 15,
+          "type": "arc",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 330, "y": 410 },
+            { "x": 320, "y": 425 },
+            { "x": 305, "y": 435 },
+            { "x": 285, "y": 443 },
+            { "x": 260, "y": 448 },
+            { "x": 230, "y": 450 },
+            { "x": 200, "y": 448 },
+            { "x": 175, "y": 443 },
+            { "x": 155, "y": 435 },
+            { "x": 140, "y": 425 },
+            { "x": 130, "y": 410 }
+          ]
+        },
+        {
+          "id": 16,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 130, "y": 410 },
+            { "x": 80, "y": 410 }
+          ]
+        },
+        {
+          "id": 17,
+          "type": "arc",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 80, "y": 410 },
+            { "x": 70, "y": 395 },
+            { "x": 65, "y": 375 },
+            { "x": 62, "y": 350 },
+            { "x": 65, "y": 325 },
+            { "x": 70, "y": 318 },
+            { "x": 80, "y": 310 }
+          ]
+        },
+        {
+          "id": 18,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 13,
+          "startOffset": 100,
+          "endOffset": 150,
+          "vertexes": [
+            { "x": 180, "y": 310 },
+            { "x": 230, "y": 310 }
+          ]
+        },
+        {
+          "id": 19,
+          "type": "arc",
+          "layer": "sewing",
+          "segmentId": 15,
+          "startOffset": 55,
+          "endOffset": 188,
+          "vertexes": [
+            { "x": 260, "y": 448 },
+            { "x": 245, "y": 449 },
+            { "x": 230, "y": 450 },
+            { "x": 215, "y": 449 },
+            { "x": 200, "y": 448 },
+            { "x": 187, "y": 446 },
+            { "x": 175, "y": 443 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Sawtooth Block",
+      "entities": [
+        {
+          "id": 20,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 600, "y": 310 },
+            { "x": 850, "y": 310 }
+          ]
+        },
+        {
+          "id": 21,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 850, "y": 310 },
+            { "x": 850, "y": 460 }
+          ]
+        },
+        {
+          "id": 22,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 600, "y": 460 },
+            { "x": 600, "y": 310 }
+          ]
+        },
+        {
+          "id": 23,
+          "type": "line",
+          "layer": "segment",
+          "vertexes": [
+            { "x": 850, "y": 460 },
+            { "x": 825, "y": 435 },
+            { "x": 800, "y": 460 },
+            { "x": 775, "y": 435 },
+            { "x": 750, "y": 460 },
+            { "x": 725, "y": 435 },
+            { "x": 700, "y": 460 },
+            { "x": 675, "y": 435 },
+            { "x": 650, "y": 460 },
+            { "x": 625, "y": 435 },
+            { "x": 600, "y": 460 }
+          ]
+        },
+        {
+          "id": 24,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 20,
+          "startOffset": 50,
+          "endOffset": 100,
+          "vertexes": [
+            { "x": 650, "y": 310 },
+            { "x": 700, "y": 310 }
+          ]
+        },
+        {
+          "id": 25,
+          "type": "line",
+          "layer": "sewing",
+          "segmentId": 23,
+          "startOffset": 50,
+          "endOffset": 200,
+          "vertexes": [
+            { "x": 800, "y": 460 },
+            { "x": 775, "y": 435 },
+            { "x": 750, "y": 460 },
+            { "x": 725, "y": 435 },
+            { "x": 700, "y": 460 },
+            { "x": 675, "y": 435 },
+            { "x": 650, "y": 460 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+# Bỏ qua các thư mục và file không cần format
+node_modules
+dist
+build
+coverage
+*.min.js
+*.min.css
+
+# Bỏ qua các file cấu hình
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Bỏ qua các file build
+*.bundle.js
+*.chunk.js

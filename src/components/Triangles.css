@@ -1,0 +1,75 @@
+.triangles-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.triangles-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.triangles-header h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.message {
+  font-size: 1.2rem;
+  color: #4CAF50;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.reset-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reset-btn:hover {
+  background-color: #1976D2;
+}
+
+.triangles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.triangle {
+  width: 100%;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.triangle:hover {
+  transform: scale(1.1);
+}
+
+.triangle:active {
+  transform: scale(0.95);
+}
+
+.triangle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.triangle svg polygon {
+  transition: fill 0.3s;
+}
+
+.triangle:hover svg polygon {
+  fill: #66BB6A;
+}

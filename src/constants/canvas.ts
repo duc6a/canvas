@@ -24,6 +24,7 @@ export const COLOR_SEGMENT = "#000000";
 export const COLOR_SEWING = "#ff0000";
 export const COLOR_SELECTED = "rgba(255, 165, 0, 0.5)";
 export const COLOR_HOVER = "#ffffff";
+export const COLOR_VERTEX = "#1e90ff";
 
 // Label settings
 export const LABEL_FONT_SIZE_SEWING = 12;
@@ -32,3 +33,10 @@ export const LABEL_PADDING = 4;
 export const LABEL_PADDING_SEGMENT = 3;
 export const LABEL_BG_COLOR = "rgba(255, 255, 255, 0.9)";
 export const LABEL_BG_COLOR_SEGMENT = "rgba(255, 255, 255, 0.85)";
+
+// Arrow settings
+export const ARROW_SIZE = 20;
+export const ARROW_RATIO = 0.25; // Vị trí mũi tên tại 25% độ dài
+
+// Vertex settings
+export const VERTEX_RADIUS = 4;

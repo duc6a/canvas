@@ -11,7 +11,11 @@ import {
   calculateEntityLength,
   getEntityCenter,
   buildSewingVertexesFromSegment,
-  findClosestSegmentParameter,
+  calculateArcLength,
+  getClickDistanceThreshold,
+  isClosedSegment,
+  getPointAndTangentAtArcLength,
+  drawArrow,
 } from "../utils/geometry";
 import { useSelection } from "../hooks/useSelection";
 import { useHover } from "../hooks/useHover";
@@ -24,9 +28,6 @@ import {
   ZOOM_DEFAULT,
   ZOOM_STEP,
   ZOOM_STEP_REVERSE,
-  CLICK_DISTANCE_THRESHOLD,
-  CLICK_DISTANCE_THRESHOLD_MIN,
-  CLICK_DISTANCE_THRESHOLD_MAX,
   DEFAULT_DRAG_OFFSET_RATIO,
   LINE_WIDTH_DEFAULT,
   LINE_WIDTH_HOVER,
@@ -34,22 +35,28 @@ import {
   COLOR_SEWING,
   COLOR_SELECTED,
   COLOR_HOVER,
+  COLOR_VERTEX,
   LABEL_FONT_SIZE_SEWING,
   LABEL_FONT_SIZE_SEGMENT,
   LABEL_PADDING,
   LABEL_PADDING_SEGMENT,
   LABEL_BG_COLOR,
   LABEL_BG_COLOR_SEGMENT,
-} from "../constants";
+  ARROW_SIZE,
+  ARROW_RATIO,
+  VERTEX_RADIUS,
+} from "../constants/canvas";
 
 const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastCursorArcLengthRef = useRef<number | null>(null);
 
   // Dữ liệu blocks có thể thay đổi
   const [blocks, setBlocks] = useState<Block[]>(() => {
     // Khởi tạo: chuyển sewing offset sang ratio và rebuild vertexes (đảm bảo đồng bộ)
     const withRatios = convertOffsetsToRatios(initialBlocksData.blocks as Block[]);
     return rebuildAllSewingsFromRatio(withRatios);
+    // return initialBlocksData.blocks as Block[];
   });
 
   // Sử dụng custom hooks để quản lý state
@@ -83,14 +90,6 @@ const Canvas = () => {
 
   // Trạng thái offset tương đối khi drag sewing (giữ vị trí click ban đầu)
   const [dragOffsetRatio, setDragOffsetRatio] = useState<number>(DEFAULT_DRAG_OFFSET_RATIO); // 0..1, vị trí click trong sewing
-
-  // Hàm tính threshold dựa trên zoom level để dễ thao tác khi zoom in
-  const getClickDistanceThreshold = (zoomLevel: number): number => {
-    // Khi zoom in, threshold giảm trong world space để dễ chọn entity gần nhau
-    const threshold = CLICK_DISTANCE_THRESHOLD / zoomLevel;
-    // Giới hạn threshold trong khoảng hợp lý
-    return Math.max(CLICK_DISTANCE_THRESHOLD_MIN, Math.min(CLICK_DISTANCE_THRESHOLD_MAX, threshold));
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -199,42 +198,39 @@ const Canvas = () => {
                   const spanRatio = Math.max(0, entity.endRatio - entity.startRatio);
 
                   // Chiếu con trỏ lên segment để lấy arc-length tại vị trí con trỏ
-                  const { segmentIndex: targetIdx, t: targetT } = findClosestSegmentParameter(
+                  const cursorArcLength = calculateArcLength(
+                    closestSegment.vertexes,
                     x,
                     y,
-                    closestSegment.vertexes
+                    lastCursorArcLengthRef.current ?? undefined
                   );
-                  const arcLengthAt = (segIdx: number, tParam: number): number => {
-                    let acc = 0;
-                    for (let i = 0; i < segIdx; i++) {
-                      const a = closestSegment.vertexes[i];
-                      const b = closestSegment.vertexes[i + 1];
-                      acc += Math.hypot(b.x - a.x, b.y - a.y);
-                    }
-                    const a = closestSegment.vertexes[targetIdx];
-                    const b = closestSegment.vertexes[targetIdx + 1];
-                    acc += tParam * Math.hypot(b.x - a.x, b.y - a.y);
-                    return acc;
-                  };
-                  const cursorArcLength = arcLengthAt(targetIdx, targetT);
+                  lastCursorArcLengthRef.current = cursorArcLength;
+                  console.log('🚀 ~ :220 ~ cursorArcLength:', cursorArcLength);
                   const cursorRatio = cursorArcLength / segLength;
 
                   // Tính start/end mới dựa trên dragOffsetRatio (giữ vị trí click ban đầu)
                   // cursorRatio tương ứng với dragOffsetRatio trong sewing
                   // => startRatio = cursorRatio - dragOffsetRatio * spanRatio
                   let newStartRatio = cursorRatio - dragOffsetRatio * spanRatio;
+                  console.log('🚀 ~ :208 ~ newStartRatio:', newStartRatio);
                   let newEndRatio = newStartRatio + spanRatio;
+                  console.log('🚀 ~ :210 ~ newEndRatio:', newEndRatio);
 
-                  // Clamp và điều chỉnh khi tràn biên
-                  if (newStartRatio < 0) {
-                    newEndRatio -= newStartRatio; // dịch sang phải
-                    newStartRatio = 0;
+                  // Kiểm tra nếu segment khép kín để cho phép wrap-around
+                  const isClosed = isClosedSegment(closestSegment);
+                  
+                  if (!isClosed) {
+                    // Clamp và điều chỉnh khi tràn biên (giữ spanRatio không đổi)
+                    if (newStartRatio < 0) {
+                      newStartRatio = 0;
+                      newEndRatio = spanRatio;
+                    } else if (newEndRatio > 1) {
+                      newEndRatio = 1;
+                      newStartRatio = Math.max(0, 1 - spanRatio);
+                    }
                   }
-                  if (newEndRatio > 1) {
-                    const overflow = newEndRatio - 1;
-                    newStartRatio = Math.max(0, newStartRatio - overflow);
-                    newEndRatio = 1;
-                  }
+                  // Với segment khép kín: KHÔNG normalize, để offset có thể > segLength
+                  // và hàm buildSewingVertexesFromSegment sẽ xử lý wrap-around
 
                   const newStartOffset = newStartRatio * segLength;
                   const newEndOffset = newEndRatio * segLength;
@@ -453,16 +449,7 @@ const Canvas = () => {
                 const segLength = calculateEntityLength(parent.vertexes);
                 if (segLength > 0) {
                   // Tìm vị trí click dọc theo segment
-                  const { segmentIndex: clickIdx, t: clickT } = findClosestSegmentParameter(x, y, parent.vertexes);
-                  let clickArcLength = 0;
-                  for (let i = 0; i < clickIdx; i++) {
-                    const a = parent.vertexes[i];
-                    const b = parent.vertexes[i + 1];
-                    clickArcLength += Math.hypot(b.x - a.x, b.y - a.y);
-                  }
-                  const a = parent.vertexes[clickIdx];
-                  const b = parent.vertexes[clickIdx + 1];
-                  clickArcLength += clickT * Math.hypot(b.x - a.x, b.y - a.y);
+                  const clickArcLength = calculateArcLength(parent.vertexes, x, y);
                   const clickRatio = clickArcLength / segLength;
 
                   // Tính vị trí click tương đối trong sewing (0..1)
@@ -480,6 +467,8 @@ const Canvas = () => {
             }
 
             startDrag(entity.id);
+            // Reset theo dõi arc length liên tục khi bắt đầu kéo
+            lastCursorArcLengthRef.current = null;
             clickedOnSewing = true;
             return;
           }
@@ -506,6 +495,7 @@ const Canvas = () => {
       if (isDragging) {
         endDrag();
         setDragOffsetRatio(DEFAULT_DRAG_OFFSET_RATIO); // Reset về giá trị mặc định
+        lastCursorArcLengthRef.current = null;
       }
     };
 
@@ -583,6 +573,67 @@ const Canvas = () => {
           }
 
           ctx.stroke();
+
+          // Render mũi tên chỉ hướng tại 25% độ dài
+          const totalLength = calculateEntityLength(entity.vertexes);
+          const arrowArcLength = totalLength * ARROW_RATIO;
+          const arrowData = getPointAndTangentAtArcLength(entity.vertexes, arrowArcLength);
+          
+          if (arrowData) {
+            const arrowColor = entity.layer === "sewing" ? COLOR_SEWING : COLOR_SEGMENT;
+            
+            // Vẽ mũi tên trong world space (chịu ảnh hưởng bởi zoom)
+            drawArrow(
+              ctx,
+              arrowData.point.x,
+              arrowData.point.y,
+              arrowData.tangent.x,
+              arrowData.tangent.y,
+              ARROW_SIZE / zoom,
+              arrowColor,
+              LINE_WIDTH_DEFAULT / zoom
+            );
+          }
+
+          // Vẽ circle nhỏ tại mỗi vertex
+          entity.vertexes.forEach((vertex, index) => {
+            ctx.beginPath();
+            ctx.arc(vertex.x, vertex.y, VERTEX_RADIUS / zoom, 0, Math.PI * 2);
+            ctx.fillStyle = COLOR_VERTEX;
+            ctx.fill();
+
+            // Vẽ số thứ tự cho vertex của sewing
+            if (entity.layer === "sewing") {
+              ctx.save();
+              const dpr = window.devicePixelRatio || 1;
+              ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+              const screenX = vertex.x * zoom + pan.x;
+              const screenY = vertex.y * zoom + pan.y;
+
+              ctx.font = "20px Arial";
+              ctx.fillStyle = COLOR_VERTEX;
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+
+              // Vẽ nền trắng cho số
+              // const textMetrics = ctx.measureText(index.toString());
+              // const padding = 4;
+              // const bgX = screenX - textMetrics.width / 2 - padding;
+              // const bgY = screenY - 10 - 16;
+              // const bgWidth = textMetrics.width + padding * 2;
+              // const bgHeight = 32;
+
+              // ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+              // ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+
+              // Vẽ số thứ tự
+              ctx.fillStyle = 'red';
+              ctx.fillText(index.toString(), screenX, screenY - 10);
+
+              ctx.restore();
+            }
+          });
 
           // Render nhãn cho sewing entities (độ dài)
           if (entity.layer === "sewing") {
